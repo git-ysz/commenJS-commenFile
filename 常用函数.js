@@ -226,3 +226,59 @@ let time1 = new Date()
     let timer2 = Y2 + '-' + M2 + '-' + D2 // 之前的7天或者30天
     return [timer2, timer1];
 }
+/*
+ * 打印操作
+ * sURL：打印地址
+ * 
+ * */
+function closePrint() {
+  return function() {
+    const m = document.querySelector(".printIframe");
+    m.parentNode.removeChild(m);
+    document.body.removeChild(this.__container__);
+  }
+}
+function setPrint() {
+  return function() {
+    this.contentWindow.__container__ = this;
+    this.contentWindow.addEventListener('afterprint',closePrint())
+    this.contentWindow.onafterprint = closePrint();
+    this.contentWindow.print();
+    this.contentWindow.focus(); // Required for IE
+  }
+}
+function printPage(sURL) {
+  let oHiddFrame = document.createElement("iframe");
+  oHiddFrame.className = "printIframe";
+  oHiddFrame.style.visibility = "hidden";
+  oHiddFrame.style.position = "fixed";
+  oHiddFrame.style.right = "0";
+  oHiddFrame.style.bottom = "0";
+  oHiddFrame.style.width = "0";
+  oHiddFrame.style.height = "0";
+  oHiddFrame.style.border = "none";
+  oHiddFrame.src = sURL;
+  // oHiddFrame.src = 'http://localhost:8080/#/'; //本地调试
+  document.body.appendChild(oHiddFrame);
+  oHiddFrame.onload = setPrint();
+}
+//保留两位小数
+function mustTwoDecimal(number) {
+    number ? number : number = 0.00
+    var num = twoDecimal(number).toString();
+    var index = num.indexOf(".");
+    if (index <= 0) {
+        num += '.';
+        index = num.length - 1;
+    }
+    while ((index + 3) != num.length) {
+        num += '0';
+    }
+    return num;
+}
+function twoDecimal(number) {
+    if (isNaN(number)) {
+        return;
+    }
+    return Math.round(number * 100) / 100;
+}
